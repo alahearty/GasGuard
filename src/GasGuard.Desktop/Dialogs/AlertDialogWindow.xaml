@@ -1,0 +1,43 @@
+<Window x:Class="GasGuard.Desktop.Dialogs.AlertDialogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GasGuard"
+        Width="520"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="{DynamicResource AppBackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        FontFamily="Segoe UI"
+        FontSize="13">
+    <Border Margin="18" Style="{StaticResource CardBorder}">
+        <StackPanel Margin="22">
+            <TextBlock x:Name="HeadingText"
+                       FontSize="19"
+                       FontWeight="SemiBold"
+                       TextWrapping="Wrap" />
+            <TextBlock x:Name="BodyText"
+                       Margin="0,12,0,0"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       TextWrapping="Wrap"
+                       LineHeight="20" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+                <Button x:Name="CancelButton"
+                        Content="Cancel"
+                        Style="{StaticResource SecondaryButton}"
+                        MinWidth="92"
+                        IsCancel="True"
+                        Visibility="Collapsed"
+                        Click="CancelClicked" />
+                <Button x:Name="ConfirmButton"
+                        Content="Continue"
+                        Style="{StaticResource PrimaryButton}"
+                        MinWidth="108"
+                        Margin="10,0,0,0"
+                        IsDefault="True"
+                        Click="ConfirmClicked" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

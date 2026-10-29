@@ -1,0 +1,109 @@
+<Window x:Class="GasGuard.Desktop.Dialogs.ContactEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:GasGuard.Desktop.Converters"
+        Title="Contact"
+        Width="560"
+        Height="610"
+        MinWidth="520"
+        MinHeight="540"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="{DynamicResource AppBackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        FontFamily="Segoe UI"
+        FontSize="13">
+    <Window.Resources>
+        <conv:SpacedEnumConverter x:Key="SpacedEnumConverter" />
+    </Window.Resources>
+    <Grid Margin="18">
+        <Border Style="{StaticResource CardBorder}">
+            <Grid Margin="24">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="{Binding DialogHeading}" FontSize="21" FontWeight="SemiBold" />
+                    <TextBlock Text="Nigerian mobile numbers are normalised to +234 E.164 format."
+                               Margin="0,6,0,0"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1" Margin="0,20,0,0" VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="18" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,14">
+                            <TextBlock Text="Full name" Style="{StaticResource FieldLabel}" />
+                            <TextBox Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" MaxLength="120" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,14">
+                            <TextBlock Text="Mobile number" Style="{StaticResource FieldLabel}" />
+                            <TextBox Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,14">
+                            <TextBlock Text="Role" Style="{StaticResource FieldLabel}" />
+                            <ComboBox ItemsSource="{Binding Roles}" SelectedItem="{Binding Role}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource SpacedEnumConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,14" VerticalAlignment="Bottom">
+                            <CheckBox Content="Contact is active" IsChecked="{Binding IsActive}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,4,0,14">
+                            <TextBlock Text="Notification preferences" Style="{StaticResource FieldLabel}" />
+                            <CheckBox Content="Notify on CRITICAL incidents" IsChecked="{Binding NotifyOnCritical}" Margin="0,4,0,0" />
+                            <CheckBox Content="Notify on WARNING incidents" IsChecked="{Binding NotifyOnWarning}" Margin="0,4,0,0" />
+                            <CheckBox Content="Notify on modem communication failures" IsChecked="{Binding NotifyOnCommunicationFailure}" Margin="0,4,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,14">
+                            <TextBlock Text="Notes" Style="{StaticResource FieldLabel}" />
+                            <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="76"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto"
+                                     MaxLength="1000" />
+                        </StackPanel>
+
+                        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
+                                Background="{DynamicResource CriticalSoftBrush}"
+                                BorderBrush="{DynamicResource CriticalBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="12"
+                                Visibility="{Binding ErrorText, Converter={StaticResource NullToVisibility}}">
+                            <TextBlock Text="{Binding ErrorText}" Foreground="{DynamicResource CriticalBrush}" TextWrapping="Wrap" />
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                    <Button Content="Cancel" Style="{StaticResource SecondaryButton}" MinWidth="96" Command="{Binding CancelCommand}" />
+                    <Button Content="Save contact" Style="{StaticResource PrimaryButton}" MinWidth="130" Margin="10,0,0,0" Command="{Binding SaveCommand}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

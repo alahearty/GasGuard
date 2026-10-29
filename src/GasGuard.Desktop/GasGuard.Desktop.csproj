@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>GasGuard.Desktop</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>GasGuard.Desktop</AssemblyName>
+    <ApplicationIcon>Assets\GasGuard.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Authors>GasGuard Desktop Project</Authors>
+    <Product>GasGuard Desktop</Product>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.14" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\GasGuard.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GasGuard.Application\GasGuard.Application.csproj" />
+    <ProjectReference Include="..\GasGuard.Contracts\GasGuard.Contracts.csproj" />
+    <ProjectReference Include="..\GasGuard.Domain\GasGuard.Domain.csproj" />
+    <ProjectReference Include="..\GasGuard.Infrastructure\GasGuard.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

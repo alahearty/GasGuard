@@ -1,0 +1,266 @@
+<UserControl x:Class="GasGuard.Desktop.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,6,0">
+            <StackPanel>
+                <Grid Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Operations overview" Style="{StaticResource PageTitleText}" />
+                        <TextBlock Style="{StaticResource PageSubtitleText}" Margin="0,4,0,0"
+                                   Text="Current detector reports, unresolved incidents and communication health. A connected modem does not prove that a detector is online or that an area is safe." />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="18,4,0,0">
+                        <Button Content="Refresh" Style="{StaticResource SecondaryButton}" Command="{Binding RefreshCommand}" />
+                        <Button Content="Load demo data" Style="{StaticResource GhostButton}" Margin="8,0,0,0"
+                                Command="{Binding LoadDemoDataCommand}"
+                                ToolTip="Adds clearly labelled demonstration detectors and contacts. Existing records are not overwritten." />
+                    </StackPanel>
+                </Grid>
+
+                <ProgressBar IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" Margin="0,0,0,10" />
+
+                <Border Background="{StaticResource WarningSoftBrush}"
+                        BorderBrush="{StaticResource WarningBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="14,10"
+                        Margin="0,0,0,14"
+                        Visibility="{Binding ContainsSimulatedData, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Background="{StaticResource WarningBrush}" CornerRadius="4" Padding="7,2" VerticalAlignment="Center">
+                            <TextBlock Text="DEMO DATA" FontSize="10" FontWeight="Bold" Foreground="#2A2008" />
+                        </Border>
+                        <TextBlock Margin="10,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource WarningBrush}"
+                                   Text="Simulated modem or simulated incident data is present. These values are demonstrations, not live gas measurements." />
+                    </StackPanel>
+                </Border>
+
+                <UniformGrid Columns="4" Margin="0,0,-12,4">
+                    <Border Style="{StaticResource MetricCard}">
+                        <StackPanel>
+                            <TextBlock Text="ACTIVE DETECTORS" Style="{StaticResource MetricLabel}" />
+                            <TextBlock Text="{Binding ActiveDetectorCount}" Style="{StaticResource MetricValue}" Margin="0,4,0,0" />
+                            <TextBlock Text="Registered detectors configured as active" Style="{StaticResource SubtleText}" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource MetricCard}">
+                        <StackPanel>
+                            <TextBlock Text="OPEN CRITICAL" Style="{StaticResource MetricLabel}" />
+                            <TextBlock Text="{Binding UnresolvedCriticalCount}" Style="{StaticResource MetricValue}" Foreground="{StaticResource CriticalBrush}" Margin="0,4,0,0" />
+                            <TextBlock Text="Critical incidents not yet resolved" Style="{StaticResource SubtleText}" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource MetricCard}">
+                        <StackPanel>
+                            <TextBlock Text="OPEN WARNINGS" Style="{StaticResource MetricLabel}" />
+                            <TextBlock Text="{Binding UnresolvedWarningCount}" Style="{StaticResource MetricValue}" Foreground="{StaticResource WarningBrush}" Margin="0,4,0,0" />
+                            <TextBlock Text="Warning incidents not yet resolved" Style="{StaticResource SubtleText}" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource MetricCard}">
+                        <StackPanel>
+                            <TextBlock Text="MODEM" Style="{StaticResource MetricLabel}" />
+                            <TextBlock Text="{Binding ModemHeadline}" FontSize="19" FontWeight="SemiBold" Margin="0,7,0,0" />
+                            <TextBlock Text="{Binding ModemDetail}" Style="{StaticResource SubtleText}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <Grid Margin="0,6,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Style="{StaticResource CardBorder}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <TextBlock Text="Detector status" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="Last reported state, not a live safety guarantee"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource SubtleText}" />
+                            </Grid>
+                            <DataGrid Grid.Row="1" Margin="0,12,0,0" Height="250" ItemsSource="{Binding Detectors}"
+                                      Visibility="{Binding HasDetectors, Converter={StaticResource BoolToVisibility}}">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Detector" Width="1.4*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding DeviceCode}" FontWeight="SemiBold" />
+                                                        <Border Background="{StaticResource InfoSoftBrush}" CornerRadius="3" Padding="5,0" Margin="7,0,0,0"
+                                                                Visibility="{Binding IsDemo, Converter={StaticResource BoolToVisibility}}">
+                                                            <TextBlock Text="DEMO" FontSize="9" FontWeight="Bold" Foreground="{StaticResource InfoBrush}" />
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding DisplayName}" Style="{StaticResource SubtleText}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="1.3*" />
+                                    <DataGridTemplateColumn Header="State" Width="1.1*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Border Style="{StaticResource PillBorder}"
+                                                        Background="{Binding OperationalState, Converter={StaticResource StateBrush}, ConverterParameter=background}">
+                                                    <TextBlock Text="{Binding OperationalState, Converter={StaticResource StateText}}"
+                                                               Foreground="{Binding OperationalState, Converter={StaticResource StateBrush}}"
+                                                               FontSize="10" FontWeight="Bold" />
+                                                </Border>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Last report (Lagos)" Binding="{Binding LastSuccessfulCommunicationUtc, Converter={StaticResource UtcToLagos}}" Width="1.4*" />
+                                    <DataGridTextColumn Header="Age" Binding="{Binding LastSuccessfulCommunicationUtc, Converter={StaticResource UtcAge}}" Width="0.8*" />
+                                    <DataGridTextColumn Header="Raw reading" Binding="{Binding LastReading}" Width="0.8*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Grid.Row="1" Margin="0,28,0,28" Visibility="{Binding HasDetectors, Converter={StaticResource BoolToVisibility}, ConverterParameter=inverse}">
+                                <TextBlock Text="No active detectors" Style="{StaticResource EmptyStateTitle}" />
+                                <TextBlock Style="{StaticResource EmptyStateBody}"
+                                           Text="Add a detector in the Gas Detectors workspace, or load clearly labelled demonstration data to rehearse the workflow." />
+                                <Button Content="Load demo data" Style="{StaticResource SecondaryButton}" HorizontalAlignment="Center" Margin="0,14,0,0"
+                                        Command="{Binding LoadDemoDataCommand}" />
+                            </StackPanel>
+                            <TextBlock Grid.Row="2" Margin="0,10,0,0" Style="{StaticResource SubtleText}"
+                                       Text="Stale readings are shown as OFFLINE / STALE. An old NORMAL message is never treated as current safety evidence." />
+                        </Grid>
+                    </Border>
+
+                    <StackPanel Grid.Column="2">
+                        <Border Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+                            <StackPanel>
+                                <TextBlock Text="System health" Style="{StaticResource SectionTitle}" />
+                                <Border Style="{StaticResource InsetBorder}" Margin="0,12,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="Last successfully received detector status" Style="{StaticResource FieldLabel}" />
+                                        <TextBlock Text="{Binding LastReportText}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding LastReportFreshness}" TextWrapping="Wrap" Margin="0,4,0,0" FontSize="12">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding LastReportIsStale}" Value="True">
+                                                            <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource InsetBorder}" Margin="0,10,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="GSM modem" Style="{StaticResource FieldLabel}" />
+                                        <TextBlock Text="{Binding ModemHeadline}" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding ModemDetail}" Style="{StaticResource SubtleText}" Margin="0,3,0,0" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource InsetBorder}" Margin="0,10,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="Database" Style="{StaticResource FieldLabel}" />
+                                        <TextBlock Text="{Binding DatabaseHealthText}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding DatabaseSizeText, StringFormat=Database size: {0}}" Style="{StaticResource SubtleText}" Margin="0,3,0,0" />
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Text="{Binding LastBackupText}" Style="{StaticResource SubtleText}" Margin="0,10,0,0" />
+                                <TextBlock Text="{Binding GeneratedAtText, StringFormat=Snapshot generated: {0} Lagos}" Style="{StaticResource SubtleText}" Margin="0,3,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Style="{StaticResource CardBorder}">
+                        <StackPanel>
+                            <Grid>
+                                <TextBlock Text="Recent alerts" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="Newest 8 incidents" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource SubtleText}" />
+                            </Grid>
+                            <DataGrid Margin="0,12,0,0" Height="210" ItemsSource="{Binding RecentAlerts}"
+                                      Visibility="{Binding HasAlerts, Converter={StaticResource BoolToVisibility}}">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Severity" Width="0.9*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Border Style="{StaticResource PillBorder}" Background="{Binding Severity, Converter={StaticResource SeverityBrush}, ConverterParameter=background}">
+                                                    <TextBlock Text="{Binding Severity, Converter={StaticResource StateText}}" FontSize="10" FontWeight="Bold"
+                                                               Foreground="{Binding Severity, Converter={StaticResource SeverityBrush}}" />
+                                                </Border>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Detector" Binding="{Binding DeviceCode}" Width="0.8*" />
+                                    <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="1.4*" />
+                                    <DataGridTextColumn Header="Status" Binding="{Binding Status, Converter={StaticResource IncidentStatusText}}" Width="1*" />
+                                    <DataGridTextColumn Header="Received (Lagos)" Binding="{Binding ReceivedAtUtc, Converter={StaticResource UtcToLagos}}" Width="1.4*" />
+                                    <DataGridTextColumn Header="Demo" Binding="{Binding IsSimulated, Converter={StaticResource BoolToYesNo}}" Width="0.5*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Margin="0,24,0,20" Visibility="{Binding HasAlerts, Converter={StaticResource BoolToVisibility}, ConverterParameter=inverse}">
+                                <TextBlock Text="No incidents recorded" Style="{StaticResource EmptyStateTitle}" />
+                                <TextBlock Text="An empty list is not proof of safety. Check detector freshness and communication health." Style="{StaticResource EmptyStateBody}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource CardBorder}">
+                        <StackPanel>
+                            <Grid>
+                                <TextBlock Text="Recent communication failures" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="Newest 8" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource SubtleText}" />
+                            </Grid>
+                            <DataGrid Margin="0,12,0,0" Height="210" ItemsSource="{Binding RecentCommunicationFailures}"
+                                      Visibility="{Binding HasCommunicationFailures, Converter={StaticResource BoolToVisibility}}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Time (Lagos)" Binding="{Binding TimestampUtc, Converter={StaticResource UtcToLagos}}" Width="1.3*" />
+                                    <DataGridTextColumn Header="Summary" Binding="{Binding Summary}" Width="1.7*" />
+                                    <DataGridTextColumn Header="Error" Binding="{Binding ErrorCode}" Width="1*" />
+                                    <DataGridTextColumn Header="Demo" Binding="{Binding IsSimulated, Converter={StaticResource BoolToYesNo}}" Width="0.5*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Margin="0,24,0,20" Visibility="{Binding HasCommunicationFailures, Converter={StaticResource BoolToVisibility}, ConverterParameter=inverse}">
+                                <TextBlock Text="No communication failures recorded" Style="{StaticResource EmptyStateTitle}" />
+                                <TextBlock Text="Modem faults and rejected messages will appear here with their diagnostic codes." Style="{StaticResource EmptyStateBody}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border Background="{StaticResource CriticalSoftBrush}"
+                        BorderBrush="{StaticResource CriticalBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="14"
+                        Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource CriticalBrush}" TextWrapping="Wrap" />
+                </Border>
+                <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource MutedText}" Margin="0,8,0,0"
+                           Visibility="{Binding HasStatus, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
